@@ -1,4 +1,4 @@
-/* Keith Burgess,
+/* Keith Burgess, Raymond Fernandez
  * masc, masc
  * CS570, Spring 2013
  * Assignment #1:
