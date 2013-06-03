@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#define NUM_THREADS	5
+#define NUM_THREADS	10
 
 void *doSomething(void*);
 void *something(char*);
@@ -27,42 +27,47 @@ void *doSomething3(void*);
 
 using namespace std;
 
-sem_t sem_lock; //define semaphore object
+sem_t sem_lock; //define global semaphore object
 
 int createThreads(){
-
-	// initialize semaphore to 2b
+	void *status;
+	// initialize semaphore
     sem_init(&sem_lock, 0, 1);
 
-    pthread_t thread1, thread2, thread3, thread4, thread5, thread6, thread7, thread8, thread9 ,thread10;
-    pthread_create(&thread1, NULL, &doSomething1, NULL);
-    pthread_create(&thread2, NULL, &doSomething1, NULL);
-    pthread_create(&thread3, NULL, &doSomething1, NULL);
-    pthread_create(&thread4, NULL, &doSomething1, NULL);
-    pthread_create(&thread5, NULL, &doSomething1, NULL);
-    pthread_create(&thread6, NULL, &doSomething1, NULL);
-    pthread_create(&thread7, NULL, &doSomething1, NULL);
-    pthread_create(&thread8, NULL, &doSomething1, NULL);
-    pthread_create(&thread9, NULL, &doSomething1, NULL);
-    pthread_create(&thread10, NULL, &doSomething1, NULL);
+    // Array of threads
+	pthread_t threads[NUM_THREADS];
+	int rc;
+	long t;
 
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
-    pthread_join(thread3, NULL);
-    pthread_join(thread4, NULL);
-    pthread_join(thread5, NULL);
-    pthread_join(thread6, NULL);
-    pthread_join(thread7, NULL);
-    pthread_join(thread8, NULL);
-    pthread_join(thread9, NULL);
-    pthread_join(thread10, NULL);
+	// initialize individual threads in thread array
+	for(t=0;t<NUM_THREADS;t++){
 
+		printf("In main process: creating thread %d\n", t);
+
+	    rc = pthread_create(&threads[t], NULL, &doSomething1, (void *)t);
+
+	    if (rc){
+	    	printf("ERROR; return code from pthread_create() is %d\n", rc);
+	    }
+	}
+
+	/*for (int i=0; i<NUM_THREADS; i++) {
+		rc = pthread_join(threads[t], &status);
+		if (rc) {
+			printf("ERROR; return code from pthread_join() is %d\n", rc);
+			//exit(-1);
+		}
+		printf("Main: completed join with thread %ld having a status of %ld\n",t,(long)status);
+	}*/
+
+  /* Clean up and exit */
+	sem_destroy(&sem_lock);
+	pthread_exit(NULL);
     return 0;
 }
 
 
 // writing on a text file
-
 void printFileInt(unsigned int threadid) {
 	unsigned int tid = (unsigned int)pthread_self();
 	ofstream myfile;
@@ -92,11 +97,10 @@ void something(unsigned int threadId) {
             // V operation
             sem_post(&sem_lock);
         }
-    cout << "Thread < " << threadId << " > has left lock\n";
+    //cout << "Thread < " << threadId << " > has left lock\n";
 }
 
 void *doSomething1(void*) {
-    // thread A
 	unsigned int tid = (unsigned int)pthread_self();
 	//cout << "Thread < " << tid << " > is running\n";
     something(tid);
