@@ -32,15 +32,13 @@ sem_t sem_lock; //define semaphore object
 int createThreads(){
 
 	// initialize semaphore to 2b
-	sem_t sem_lock; //define semaphore object
     sem_init(&sem_lock, 0, 1);
 
     pthread_t thread1, thread2, thread3;
-    cout << "test";
     pthread_create(&thread1, NULL, &doSomething1, NULL);
     pthread_create(&thread2, NULL, &doSomething2, NULL);
     pthread_create(&thread3, NULL, &doSomething3, NULL);
-    cout << "test";
+
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
     pthread_join(thread3, NULL);
@@ -52,47 +50,24 @@ int sem_init(sem_t *sem, int pshared, unsigned int value);//initialize semaphore
 
 // writing on a text file
 
-void printFileInt(int threadid) {
-	long tid;
-	tid = (long)threadid;
+void printFileInt(unsigned int threadid) {
 	ofstream myfile;
-	myfile.open ("PROCTAB.txt");
+	myfile.open ("PROCTAB.txt", ios::out | ios::app );
     myfile << threadid << " test\n";
     myfile.close();
 }
 
 
-/*void *runThreads(){
-	pthread_t threads[NUM_THREADS];
-	int rc;
-	long t;
-
-	for(t=0;t<NUM_THREADS;t++){
-	     printf("In main process: creating thread %ld\n", t);
-
-	     rc = pthread_create(&threads[t], NULL, printFileInt, (void *)t);
-	     if (rc){
-	       printf("ERROR; return code from pthread_create() is %d\n", rc);
-
-	       }
-	     }
-	   pthread_exit(NULL);
-}*/
-
-
-//void destroy_lock(){
-	//sem_destroy(sem_lock);
-//}
 
 void *doSomething(void*) {
     // thread A
 	unsigned int tid = (unsigned int)pthread_self();
-    printf("PID of this p: %u\n", tid);
+    //printf("PID of this p: %u\n", tid);
     return 0;
 }
 
 void something(char c) {
-	cout << "test";
+
     int i, time;
     for (i = 0; i < 3; i++) {
 
@@ -101,10 +76,10 @@ void something(char c) {
 
             // generate random amount of time (< 30 seconds)
             time = (int) ((double) rand() / RAND_MAX * 10);
-        	//unsigned int tid = (unsigned int)pthread_self();
-        	//printf("PID of this process: %u\n", tid);
+        	unsigned int tid = (unsigned int)pthread_self();
+        	printf("PID of this process: %u\n", tid);
             printf("Thread %c enters and sleeps for %d seconds...\n", c, time);
-
+            printFileInt(tid);
             sleep(time);
 
             printf("Thread %c leaves the critical section\n", c);
@@ -117,21 +92,18 @@ void something(char c) {
 
 void *doSomething1(void*) {
     // thread A
-	cout << "test";
     something('A');
     return 0;
 }
 
 void *doSomething2(void*) {
     // thread B
-
     something('B');
     return 0;
 }
 
 void *doSomething3(void*) {
     // thread C
-
     something('C');
     return 0;
 }

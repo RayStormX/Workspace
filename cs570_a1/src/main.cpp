@@ -23,7 +23,7 @@ using namespace std;
 
 
 int main() {
-	cout << "test";
+
 	createThreads();
-	cout << "test";
+
 }
