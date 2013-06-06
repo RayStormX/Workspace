@@ -1,5 +1,5 @@
 /* Keith Burgess, Raymond Fernandez
- * masc, masc
+ * masc, masc0973
  * CS570, Spring 2013
  * Assignment #1:
  * Filename: Functions.h
